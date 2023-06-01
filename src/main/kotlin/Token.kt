@@ -10,7 +10,7 @@ class Token (
         if (other !is Token){
             return false
         }
-        return false
+        return this.type == other.type
     }
 
     override fun hashCode(): Int {
@@ -21,7 +21,7 @@ class Token (
         return result
     }
 
-    override fun toString(): String = "Token: $type with lexeme: $lexeme found at: $line with value: $value"
+    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
 
 }
 
