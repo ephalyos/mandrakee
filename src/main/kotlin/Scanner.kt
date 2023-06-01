@@ -1,7 +1,7 @@
 
-class Scanner () {
+class Scanner {
 
-    val reserved = hashMapOf<String, TokenType>(
+    val reserved = hashMapOf(
         "if" to TokenType.IF,
         "else" to TokenType.ELSE,
         "var" to TokenType.VAR,
@@ -200,15 +200,18 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 }
                 12 -> {
                     state = if (ch == '"') {
+                        lexeme += ch
+                        i += 1
                         tokens.add(Token(lexeme, linenum, lexeme, TokenType.STRING))
+                        lexeme = ""
                         0
                     } else if ( (i+1) >= line.length ) {
                         throw Error("Not matching quotes for String at $linenum")
                     } else {
+                        lexeme += ch
+                        i += 1
                         12
                     }
-                    lexeme += ch
-                    i += 1
                 }
                 13 -> {
                     state = if (ch == '\n') {
