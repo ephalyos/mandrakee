@@ -1,9 +1,9 @@
 
 class Token (
-    private val value: Any?,
-    private val line: Int = 0,
+    private val value: Any? = null,
+    val line: Int = 0,
     private val lexeme: String,
-    private val type: TokenType,
+    val type: TokenType,
 ) {
 
     override fun equals(other: Any?): Boolean {
