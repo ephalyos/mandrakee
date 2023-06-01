@@ -1,0 +1,28 @@
+
+fun main () {
+
+    val total = 0.9817
+    val size = 0.14e-34
+
+    /*
+        description of this scope
+        1.-
+        2.-
+        3.-
+    */
+
+    if (total != null) {
+        do_something()
+    } else {
+        val obj = Class()
+    }
+
+    // here goes class definition
+
+    class local {
+
+    }
+
+}
+
+fun do () { print("huevarines") }
