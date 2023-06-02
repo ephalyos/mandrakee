@@ -1,8 +1,10 @@
 
+package sql
+
 class Token (
     val type: TokenType,
-    val lexeme: String,
-    val line: Int = 0
+    private val lexeme: String,
+    private val line: Int = 0
 ) {
 
     override fun equals(other: Any?): Boolean {
