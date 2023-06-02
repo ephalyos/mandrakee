@@ -65,7 +65,15 @@ class Parser (
     }
 
     private fun program () {
-        declaration()
+        when (current) {
+            notT, minusT, trueT, falseT, nullT, thisT, integerT, doubleT, stringT, identifierT, leftParenthesesT, superT,
+            forT, ifT, printT, returnT, whileT, leftBraceT, classT, varT, funT -> {
+                declaration()
+            }
+             else -> {
+                 throw Error("Error at ${current.line} expected DECLARATION")
+             }
+        }
     }
 
     // DECLARATIONS - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -313,8 +321,13 @@ class Parser (
     }
 
     private fun blockDecl () {
-        declaration()
-        blockDecl()
+        when (current) {
+            notT, minusT, trueT, falseT, nullT, thisT, integerT, doubleT, stringT, identifierT, leftParenthesesT, superT,
+            forT, ifT, printT, returnT, whileT, leftBraceT, classT, varT, funT -> {
+                declaration()
+                blockDecl()
+            }
+        }
     }
 
     // EXPRESSIONS  - - - - - - - - - - - - - - - - - - - - - - - - -
