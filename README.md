@@ -1,3 +1,3 @@
 # mandrakee
 
-## Interpreter made in Kotlin
+## interpreter made in Kotlin
