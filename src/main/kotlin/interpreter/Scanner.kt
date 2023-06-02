@@ -38,7 +38,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
 
     for ((linenum, line) in lines.withIndex()) {
         var i = 0
-        while ( i < line.length ) {
+        while (i < line.length) {
             val ch = line[i]
             when (state) {
                 0 -> {
