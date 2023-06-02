@@ -17,6 +17,9 @@ fun main (args: Array<String>) {
     } else {
         val input: List<String> = File(args[0]).readLines()
         val tokens = scanner.scan(input)
+        for (token in tokens) {
+            println(token.toString())
+        }
         val parser = Parser(tokens)
         parser.parse()
     }
