@@ -1,4 +1,6 @@
 
+package interpreter
+
 class Scanner {
 
     val reserved = hashMapOf(

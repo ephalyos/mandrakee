@@ -1,4 +1,6 @@
 
+package interpreter
+
 class Parser (
     private val tokens: List<Token>
 ) {

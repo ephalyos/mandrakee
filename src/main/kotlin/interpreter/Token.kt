@@ -1,4 +1,6 @@
 
+package interpreter
+
 class Token (
     private val value: Any? = null,
     val line: Int = 0,
