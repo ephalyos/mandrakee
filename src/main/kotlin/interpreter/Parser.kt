@@ -579,15 +579,15 @@ class Parser (
         }
     }
 
-    private fun callOptional () {
-        when (current) {
-            trueT, falseT, nullT, thisT, integerT, doubleT,
-            stringT, identifierT, leftParenthesesT, superT-> {
-                call()
-                match(dotT)
-            }
-        }
-    }
+//    private fun callOptional () {
+//        when (current) {
+//            trueT, falseT, nullT, thisT, integerT, doubleT,
+//            stringT, identifierT, leftParenthesesT, superT-> {
+//                call()
+//                match(dotT)
+//            }
+//        }
+//    }
 
     private fun primary () {
         when (current) {
