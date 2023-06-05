@@ -3,7 +3,7 @@ package sql
 
 class Token (
     val type: TokenType,
-    private val lexeme: String,
+    val lexeme: String,
     private val line: Int = 0
 ) {
 
