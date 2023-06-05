@@ -36,8 +36,9 @@ fun Scanner.scan (lines: List<String>): List<Token> {
     var state = 0
     var lexeme = ""
 
-    for ((linenum, line) in lines.withIndex()) {
+    for ((linenumber, input) in lines.withIndex()) {
         var i = 0
+        val line = "$input "
         while (i < line.length) {
             val ch = line[i]
             when (state) {
@@ -74,16 +75,16 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 }
                 2 -> {
                     when (ch) {
-                        '(' -> tokens.add(Token(null, linenum, lexeme, TokenType.LEFT_PARENTHESES))
-                        ')' -> tokens.add(Token(null, linenum, lexeme, TokenType.RIGHT_PARENTHESES))
-                        '{' -> tokens.add(Token(null, linenum, lexeme, TokenType.LEFT_BRACE))
-                        '}' -> tokens.add(Token(null, linenum, lexeme, TokenType.RIGHT_BRACE))
-                        '[' -> tokens.add(Token(null, linenum, lexeme, TokenType.LEFT_BRACKET))
-                        ']' -> tokens.add(Token(null, linenum, lexeme, TokenType.RIGHT_BRACKET))
-                        ',' -> tokens.add(Token(null, linenum, lexeme, TokenType.COMMA))
-                        '.' -> tokens.add(Token(null, linenum, lexeme, TokenType.DOT))
-                        ';' -> tokens.add(Token(null, linenum, lexeme, TokenType.SEMI_COLON))
-                        ':' -> tokens.add(Token(null, linenum, lexeme, TokenType.COLON))
+                        '(' -> tokens.add(Token(null, linenumber, lexeme, TokenType.LEFT_PARENTHESES))
+                        ')' -> tokens.add(Token(null, linenumber, lexeme, TokenType.RIGHT_PARENTHESES))
+                        '{' -> tokens.add(Token(null, linenumber, lexeme, TokenType.LEFT_BRACE))
+                        '}' -> tokens.add(Token(null, linenumber, lexeme, TokenType.RIGHT_BRACE))
+                        '[' -> tokens.add(Token(null, linenumber, lexeme, TokenType.LEFT_BRACKET))
+                        ']' -> tokens.add(Token(null, linenumber, lexeme, TokenType.RIGHT_BRACKET))
+                        ',' -> tokens.add(Token(null, linenumber, lexeme, TokenType.COMMA))
+                        '.' -> tokens.add(Token(null, linenumber, lexeme, TokenType.DOT))
+                        ';' -> tokens.add(Token(null, linenumber, lexeme, TokenType.SEMI_COLON))
+                        ':' -> tokens.add(Token(null, linenumber, lexeme, TokenType.COLON))
                     }
                     lexeme = ""
                     i += 1
@@ -92,10 +93,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 3 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.LESSER_EQUAL_THAN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.LESSER_EQUAL_THAN))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.LESSER_THAN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.LESSER_THAN))
                     }
                     lexeme = ""
                     state = 0
@@ -103,10 +104,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 4 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.GREATER_EQUAL_THAN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.GREATER_EQUAL_THAN))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.GREATER_THAN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.GREATER_THAN))
                     }
                     lexeme = ""
                     state = 0
@@ -114,10 +115,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 5 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.ADDITION_ASSIGN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.ADDITION_ASSIGN))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.ADDITION))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.ADDITION))
                     }
                     lexeme = ""
                     state = 0
@@ -125,10 +126,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 6 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.SUBSTRACT_ASSIGN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.SUBSTRACT_ASSIGN))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.SUBSTRACT))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.SUBSTRACT))
                     }
                     lexeme = ""
                     state = 0
@@ -136,10 +137,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 7 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.MULTIPLICATION_ASSIGN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.MULTIPLICATION_ASSIGN))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.MULTIPLICATION))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.MULTIPLICATION))
                     }
                     lexeme = ""
                     state = 0
@@ -148,7 +149,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                     when (ch) {
                         '=' -> {
                             lexeme += ch
-                            tokens.add(Token(null, linenum, lexeme, TokenType.DIVISION_ASSIGN))
+                            tokens.add(Token(null, linenumber, lexeme, TokenType.DIVISION_ASSIGN))
                             state = 0
                             i += 1
                         }
@@ -161,7 +162,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                             i += 1
                         }
                         else -> {
-                            tokens.add(Token(null, linenum, lexeme, TokenType.DIVISION))
+                            tokens.add(Token(null, linenumber, lexeme, TokenType.DIVISION))
                             state = 0
                         }
                     }
@@ -170,10 +171,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 9 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.MODULUS_ASSIGN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.MODULUS_ASSIGN))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.MODULUS))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.MODULUS))
                     }
                     lexeme = ""
                     state = 0
@@ -181,10 +182,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 10 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.EQUALS))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.EQUALS))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.ASSIGN))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.ASSIGN))
                     }
                     lexeme = ""
                     state = 0
@@ -192,10 +193,10 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                 11 -> {
                     if (ch == '=') {
                         lexeme += ch
-                        tokens.add(Token(null, linenum, lexeme, TokenType.NOT_EQUALS))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.NOT_EQUALS))
                         i += 1
                     } else {
-                        tokens.add(Token(null, linenum, lexeme, TokenType.NOT))
+                        tokens.add(Token(null, linenumber, lexeme, TokenType.NOT))
                     }
                     lexeme = ""
                     state = 0
@@ -204,11 +205,11 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                     state = if (ch == '"') {
                         lexeme += ch
                         i += 1
-                        tokens.add(Token(lexeme, linenum, lexeme, TokenType.STRING))
+                        tokens.add(Token(lexeme, linenumber, lexeme, TokenType.STRING))
                         lexeme = ""
                         0
                     } else if ( (i+1) >= line.length ) {
-                        throw Error("Not matching quotes for String at $linenum")
+                        throw Error("Not matching quotes for String at $linenumber")
                     } else {
                         lexeme += ch
                         i += 1
@@ -257,7 +258,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                             i += 1
                         }
                         else -> {
-                            tokens.add(Token(lexeme.toInt(), linenum, lexeme, TokenType.INTEGER))
+                            tokens.add(Token(lexeme.toInt(), linenumber, lexeme, TokenType.INTEGER))
                             lexeme = ""
                             state = 0
                         }
@@ -269,7 +270,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                         state = 18
                         i += 1
                     } else {
-                        throw Error("Bad Number definition at $linenum")
+                        throw Error("Bad Number definition at $linenumber")
                     }
                 }
                 18 -> {
@@ -285,7 +286,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                             i += 1
                         }
                         else -> {
-                            tokens.add(Token(lexeme.toDouble(), linenum, lexeme, TokenType.DOUBLE))
+                            tokens.add(Token(lexeme.toDouble(), linenumber, lexeme, TokenType.DOUBLE))
                             lexeme = ""
                             state = 0
                         }
@@ -303,7 +304,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                             state = 21
                             i += 1
                         }
-                        else -> throw Error("Bad Number definition at $linenum")
+                        else -> throw Error("Bad Number definition at $linenumber")
                     }
                 }
                 20 -> {
@@ -312,7 +313,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                         state = 20
                         i += 1
                     } else {
-                        tokens.add(Token(lexeme.toDouble(), linenum, lexeme, TokenType.DOUBLE))
+                        tokens.add(Token(lexeme.toDouble(), linenumber, lexeme, TokenType.DOUBLE))
                         lexeme = ""
                         state = 0
                     }
@@ -323,7 +324,7 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                         state = 20
                         i += 1
                     } else {
-                        throw Error("Bad Number definition at $linenum")
+                        throw Error("Bad Number definition at $linenumber")
                     }
                 }
                 22 -> {
@@ -335,9 +336,9 @@ fun Scanner.scan (lines: List<String>): List<Token> {
                         }
                         else -> {
                             if (lexeme in reserved) {
-                                tokens.add(Token(null, linenum, lexeme, reserved[lexeme]!!))
+                                tokens.add(Token(null, linenumber, lexeme, reserved[lexeme]!!))
                             } else {
-                                tokens.add(Token(null, linenum, lexeme, TokenType.IDENTIFIER))
+                                tokens.add(Token(null, linenumber, lexeme, TokenType.IDENTIFIER))
                             }
                             lexeme = ""
                             state = 0
