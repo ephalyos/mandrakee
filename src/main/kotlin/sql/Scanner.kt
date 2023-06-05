@@ -11,7 +11,7 @@ class Scanner {
 
 }
 
-fun Scanner.scan (line: String): List<Token> {
+fun Scanner.scan (input: String): List<Token> {
 
     val tokens = mutableListOf<Token>()
 
@@ -22,6 +22,7 @@ fun Scanner.scan (line: String): List<Token> {
     var state = 0
     var lexeme = ""
     var i = 0
+    val line = "$input "
 
     while (i < line.length) {
         val ch = line[i]
@@ -84,7 +85,7 @@ fun Scanner.scan (line: String): List<Token> {
         }
     }
 
-    tokens.add(Token(TokenType.EOF, ""))
+    tokens.add(Token(TokenType.EOF, "$"))
 
     return tokens
 
