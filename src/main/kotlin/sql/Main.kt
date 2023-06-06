@@ -25,7 +25,7 @@ fun main () {
         for (token in tokens) {
             println(token.toString())
         }
-        val parser = LLParser(tokens)
+        val parser = LRParser(tokens)
         parser.parse()
     }
 
