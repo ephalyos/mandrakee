@@ -81,7 +81,7 @@ class LLParser (
                     val derivation = lookup(top, currentSymbol)
                     stack.addAll(derivation)
                 } catch (e: Error) {
-                    println("Invalid Query")
+                    println("Invalid Query: ${e.message}")
                     return
                 }
             }
