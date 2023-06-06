@@ -77,8 +77,13 @@ class LLParser (
                 if (top == "$") break
                 currentSymbol = getNextSymbol()
             } else {
-                val derivation = lookup(top, currentSymbol)
-                stack.addAll(derivation)
+                try {
+                    val derivation = lookup(top, currentSymbol)
+                    stack.addAll(derivation)
+                } catch (e: Error) {
+                    println("Invalid Query")
+                    return
+                }
             }
 
         }
