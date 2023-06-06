@@ -1,8 +1,6 @@
 
 package sql
 
-import com.sun.tools.example.debug.expr.ExpressionParserConstants.DO
-
 class LRParser (
     private val tokens: List<Token>
 ) {
@@ -172,18 +170,76 @@ class LRParser (
     )
 
     private fun actionLookup (state: Int, terminal: String): Pair<ACTION, Int> {
-        return actionTable[state]?.get(terminal)!!
+        return actionTable[state]?.get(terminal) ?: throw Error()
     }
 
     private fun gotoLookup (state: Int, nonTerminal: String): Int {
-        return 0
+        return gotoTable[state]?.get(nonTerminal) ?: throw Error()
+    }
+
+    private var i = 0
+    private fun getNextSymbol (): String {
+        return try {
+            val nextToken = tokens[i++]
+            if (nextToken.type == TokenType.IDENTIFIER) "id" else nextToken.lexeme
+        } catch (e: IndexOutOfBoundsException) {
+            "Error Occurred"
+        }
     }
 
     private var stateStack = mutableListOf(0)
     private var symbolStack = mutableListOf<String>()
 
-    private fun parse () {
+    fun parse () {
 
+        var currentSymbol = getNextSymbol()
+        var currentState = stateStack[stateStack.size - 1]
+
+        while (true) {
+
+            var action: Pair<ACTION, Int>
+            try {
+                action = actionLookup(currentState, currentSymbol)
+            } catch (e: Error) {
+                println("Invalid query")
+                return
+            }
+            println("states: $stateStack")
+            println("symbols: $symbolStack")
+
+            if (action.first == ACTION.SHIFT) {
+                stateStack.add(action.second)
+                symbolStack.add(currentSymbol)
+                currentSymbol = getNextSymbol()
+                currentState = stateStack[stateStack.size - 1]
+
+            } else if (action.first == ACTION.REDUCE) {
+                val head = productions[action.second]?.first!!
+                val body = productions[action.second]?.second!!
+                var temp = 0
+                while (temp < body.size) {
+                    stateStack.removeAt(stateStack.size - 1)
+                    symbolStack.removeAt(symbolStack.size - 1)
+                    temp++
+                }
+                currentState = stateStack[stateStack.size - 1]
+                var nextState: Int
+                try {
+                    nextState = gotoLookup(currentState, head)
+                } catch (e: Error) {
+                    println("Invalid query")
+                    return
+                }
+                stateStack.add(nextState)
+                symbolStack.add(head)
+                currentState = nextState
+
+            } else {
+                break
+            }
+
+        }
+        println("Valid query")
     }
 
 }
