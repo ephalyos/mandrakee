@@ -1,6 +1,5 @@
 
 package interpreter
-import java.awt.SystemColor.text
 import java.io.File
 
 fun main (args: Array<String>) {
