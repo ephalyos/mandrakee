@@ -1,5 +1,6 @@
 
 package interpreter
+import java.awt.SystemColor.text
 import java.io.File
 
 fun main (args: Array<String>) {
@@ -15,8 +16,8 @@ fun main (args: Array<String>) {
             val tokens = scanner.scan()
             for (token in tokens) println(token.toString())
             // Parser creation
-//            val parser = Parser(tokens)
-//            parser.parse()
+            val parser = Parser(tokens)
+            parser.parse()
         }
     } else {
         // File Reading
@@ -25,6 +26,9 @@ fun main (args: Array<String>) {
         val scanner = Scanner(input)
         val tokens = scanner.scan()
         for (token in tokens) println(token.toString())
+        // Parser creation
+        val parser = Parser(tokens)
+        parser.parse()
     }
 
 }
