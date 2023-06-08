@@ -1,74 +1,74 @@
+
+    //var mensaje = "Sigan viendo // FAILED TO SCAN STRING
+    //var pi = 3.14e 15; // FAILED TO SCAN NUMBER
+    // var pi = 3.14.15; // EXPECTED IDENTIFIER
+
 // Prueba 1:
 
-var a;
-var b=0;
+    var a;
+    var b=0;
 
 // Prueba 2:
 
-if(a<123){
-    print a;
-}
-
+    if(a<123){
+        print a;
+    }
 
 // Prueba 3:
 
-for(var i=0; ;){
-    print i;
+    for(var i=0; ;){
+        print i;
 
-    if (i>100){
-        return;
+        if (i>100){
+            return;
+        }
     }
-}
-
 
 // Prueba 4:
 
-fun sumar(variable1, variable2){
-    return variabl1 + variable2;
-}
-
+    fun sumar(variable1, variable2){
+        return variabl1 + variable2;
+    }
 
 // Prueba 5:
 
-class Perro < Animal {
-    ladrar(){
-        print "Guauuu";
-    }
+    class Perro < Animal {
+        ladrar(){
+            print "Guauuu";
+        }
 
-    comer(){
-        while(tanque < 100){
-            tanque = tanque + 1;
+        comer(){
+            while(tanque < 100){
+                tanque = tanque + 1;
+            }
         }
     }
-}
 
-fun crearPerro(){
-    perro = Perro();
-    perror.ladrar();
-}
+    fun crearPerro(){
+        perro = Perro();
+        perror.ladrar();
+    }
 
-crearPerro();
-
+    crearPerro();
 
 // Prueba 6:
 
-var nombre = "Hola mundo"
-fun presentarse(){
-    print nombre;
-}
-
+    var nombre = "Hola mundo"; // error: EXPECTED SEMI_COLON
+    fun presentarse(){  // error: EXPECTED LEFT_PARENTHESES
+        print nombre;
+    }
 
 // Prueba 7:
 
-/*
-Código para calcula la serie de Fibonacci
-*/
-var fib = 0;
-var lim = 10;
-var aux = 1;
+    /*
+    Código para calcula la serie de Fibonacci
+    */
+    var fib = 0;
+    var lim = 10;
+    var aux = 1;
 
-for(var init = 1; init <= lim; init = init + 1)
-    print fib;
-    aux = aux + fib;
-    fib = aux - fib;
-}
+    for(var init = 1; init <= lim; init = init + 1)
+        print fib;
+        aux = aux + fib;
+        fib = aux - fib;
+    }
