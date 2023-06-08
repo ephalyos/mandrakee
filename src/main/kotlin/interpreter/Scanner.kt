@@ -1,9 +1,11 @@
 
 package interpreter
 
-class Scanner {
+class Scanner (
+    private val lines: List<String>
+) {
 
-    val reserved = hashMapOf(
+    private val reserved = hashMapOf(
         "if" to TokenType.IF,
         "else" to TokenType.ELSE,
         "var" to TokenType.VAR,
@@ -23,334 +25,235 @@ class Scanner {
         "print" to TokenType.PRINT,
     )
 
-}
+    private val digits = ('0'..'9').joinToString("")
+    private val lowercase = ('a'..'z').joinToString("")
+    private val uppercase = ('A'..'Z').joinToString("")
 
-fun Scanner.scan (lines: List<String>): List<Token> {
+    private val save = Action.SAVE_CHAR
+    private val grab = Action.GRAB_NEXT_CHAR
+    private val clear = Action.CLEAR_LEXEME
+    private val add = Action.ADD_TOKEN
+    private val error = Action.ERROR
 
-    val tokens = mutableListOf<Token>()
+    private val table = hashMapOf(
+        0 to listOf(
+            Transition(accept = "\n ", state = 0, actions = listOf(grab)),
+            Transition(accept = null, state = 1, actions = listOf()),
+        ),
+        1 to listOf(
+            Transition(accept = "<", state = 3, actions = listOf(save, grab)),
+            Transition(accept = ">", state = 4, actions = listOf(save, grab)),
+            Transition(accept = "+", state = 5, actions = listOf(save, grab)),
+            Transition(accept = "-", state = 6, actions = listOf(save, grab)),
+            Transition(accept = "*", state = 7, actions = listOf(save, grab)),
+            Transition(accept = "/", state = 8, actions = listOf(save, grab)),
+            Transition(accept = "%", state = 9, actions = listOf(save, grab)),
+            Transition(accept = "=", state = 10, actions = listOf(save, grab)),
+            Transition(accept = "!", state = 11, actions = listOf(save, grab)),
+            Transition(accept = "\"", state = 12, actions = listOf(save, grab)),
+            Transition(accept = digits, state = 16, actions = listOf(save, grab)),
+            Transition(accept = "$lowercase$uppercase", state = 22, actions = listOf(save, grab)),
+            Transition(accept = null, state = 2, actions = listOf()),
+        ),
+        2 to listOf(
+            Transition(accept = "(", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.LEFT_PARENTHESES),
+            Transition(accept = ")", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.RIGHT_PARENTHESES),
+            Transition(accept = "{", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.LEFT_BRACE),
+            Transition(accept = "}", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.RIGHT_BRACE),
+            Transition(accept = "[", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.LEFT_BRACKET),
+            Transition(accept = "]", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.RIGHT_BRACKET),
+            Transition(accept = ",", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.COMMA),
+            Transition(accept = ".", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.DOT),
+            Transition(accept = ";", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.SEMI_COLON),
+            Transition(accept = ":", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.COLON),
+        ),
+        3 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.LESSER_EQUAL_THAN),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.LESSER_THAN),
+        ),
+        4 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.GREATER_EQUAL_THAN),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.GREATER_THAN),
+        ),
+        5 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.ADDITION_ASSIGN),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.ADDITION),
+        ),
+        6 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.SUBSTRACT_ASSIGN),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.SUBSTRACT),
+        ),
+        7 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.MULTIPLICATION_ASSIGN),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.MULTIPLICATION),
+        ),
+        8 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.DIVISION_ASSIGN),
+            Transition(accept = "/", state = 13, actions = listOf(clear, grab)),
+            Transition(accept = "*", state = 14, actions = listOf(clear, grab)),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.DIVISION),
+        ),
+        9 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.MODULUS_ASSIGN),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.MODULUS),
+        ),
+        10 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.EQUALS),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.ASSIGN),
+        ),
+        11 to listOf(
+            Transition(accept = "=", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.NOT_EQUALS),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.NOT),
+        ),
+        12 to listOf(
+            Transition(accept = "\"", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.STRING),
+            Transition(accept = "\n", state = 12, actions = listOf(error)),
+            Transition(accept = null, state = 12, actions = listOf(save, grab)),
+        ),
+        13 to listOf(
+            Transition(accept = "\n", state = 0, actions = listOf(grab)),
+            Transition(accept = null, state = 13, actions = listOf(grab)),
+        ),
+        14 to listOf(
+            Transition(accept = "*", state = 15, actions = listOf(grab)),
+            Transition(accept = null, state = 14, actions = listOf(grab)),
+        ),
+        15 to listOf(
+            Transition(accept = "/", state = 0, actions = listOf(grab)),
+            Transition(accept = null, state = 14, actions = listOf(grab)),
+        ),
+        16 to listOf(
+            Transition(accept = digits, state = 16, actions = listOf(save, grab)),
+            Transition(accept = ".", state = 17, actions = listOf(save, grab)),
+            Transition(accept = "e", state = 19, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.INTEGER),
+        ),
+        17 to listOf(
+            Transition(accept = digits, state = 18, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(error)),
+        ),
+        18 to listOf(
+            Transition(accept = digits, state = 18, actions = listOf(save, grab)),
+            Transition(accept = "e", state = 19, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.DOUBLE),
+        ),
+        19 to listOf(
+            Transition(accept = digits, state = 20, actions = listOf(save, grab)),
+            Transition(accept = "+-", state = 21, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(error)),
+        ),
+        20 to listOf(
+            Transition(accept = digits, state = 20, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.DOUBLE),
+        ),
+        21 to listOf(
+            Transition(accept = digits, state = 20, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(error)),
+        ),
+        22 to listOf(
+            Transition(accept = "_$digits$lowercase$uppercase", state = 22, actions = listOf(save, grab)),
+            Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.IDENTIFIER),
+        ),
+    )
 
-    val digits = '0'..'9'
-    val lowercase = 'a'..'z'
-    val uppercase = 'A'..'Z'
+    private var lineIndex = 0
+    private var charIndex = 0
 
-    var state = 0
-    var lexeme = ""
+    private fun nextChar (): Char? {
+        if (lines.isEmpty())
+            return null
+        val currentLine = lines[lineIndex]
+        if (charIndex >= currentLine.length) {
+            charIndex = 0
+            lineIndex++
+            if (lineIndex >= lines.size) {
+                return null
+            }
+        }
+        return currentLine[charIndex++]
+    }
 
-    for ((linenumber, input) in lines.withIndex()) {
-        var i = 0
-        val line = "$input "
-        while (i < line.length) {
-            val ch = line[i]
-            when (state) {
-                0 -> {
-                    when (ch) {
-                        ' ', '\n' -> {
-                            state = 0
-                            i += 1
-                        }
-                        else -> {
-                            state = 1
-                        }
-                    }
-                }
-                1 -> {
-                    state = when (ch) {
-                        '<' -> 3
-                        '>' -> 4
-                        '+' -> 5
-                        '-' -> 6
-                        '*' -> 7
-                        '/' -> 8
-                        '%' -> 9
-                        '=' -> 10
-                        '!' -> 11
-                        '"' -> 12
-                        in digits -> 16
-                        in lowercase, in uppercase -> 22
-                        else -> 2
-                    }
-                    lexeme += ch
-                    if (state != 2)
-                        i += 1
-                }
-                2 -> {
-                    when (ch) {
-                        '(' -> tokens.add(Token(null, linenumber, lexeme, TokenType.LEFT_PARENTHESES))
-                        ')' -> tokens.add(Token(null, linenumber, lexeme, TokenType.RIGHT_PARENTHESES))
-                        '{' -> tokens.add(Token(null, linenumber, lexeme, TokenType.LEFT_BRACE))
-                        '}' -> tokens.add(Token(null, linenumber, lexeme, TokenType.RIGHT_BRACE))
-                        '[' -> tokens.add(Token(null, linenumber, lexeme, TokenType.LEFT_BRACKET))
-                        ']' -> tokens.add(Token(null, linenumber, lexeme, TokenType.RIGHT_BRACKET))
-                        ',' -> tokens.add(Token(null, linenumber, lexeme, TokenType.COMMA))
-                        '.' -> tokens.add(Token(null, linenumber, lexeme, TokenType.DOT))
-                        ';' -> tokens.add(Token(null, linenumber, lexeme, TokenType.SEMI_COLON))
-                        ':' -> tokens.add(Token(null, linenumber, lexeme, TokenType.COLON))
-                    }
-                    lexeme = ""
-                    i += 1
-                    state = 0
-                }
-                3 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.LESSER_EQUAL_THAN))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.LESSER_THAN))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                4 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.GREATER_EQUAL_THAN))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.GREATER_THAN))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                5 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.ADDITION_ASSIGN))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.ADDITION))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                6 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.SUBSTRACT_ASSIGN))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.SUBSTRACT))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                7 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.MULTIPLICATION_ASSIGN))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.MULTIPLICATION))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                8 -> {
-                    when (ch) {
-                        '=' -> {
-                            lexeme += ch
-                            tokens.add(Token(null, linenumber, lexeme, TokenType.DIVISION_ASSIGN))
-                            state = 0
-                            i += 1
-                        }
-                        '/' -> {
-                            state = 13
-                            i += 1
-                        }
-                        '*' -> {
-                            state = 14
-                            i += 1
-                        }
-                        else -> {
-                            tokens.add(Token(null, linenumber, lexeme, TokenType.DIVISION))
-                            state = 0
-                        }
-                    }
-                    lexeme = ""
-                }
-                9 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.MODULUS_ASSIGN))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.MODULUS))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                10 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.EQUALS))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.ASSIGN))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                11 -> {
-                    if (ch == '=') {
-                        lexeme += ch
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.NOT_EQUALS))
-                        i += 1
-                    } else {
-                        tokens.add(Token(null, linenumber, lexeme, TokenType.NOT))
-                    }
-                    lexeme = ""
-                    state = 0
-                }
-                12 -> {
-                    state = if (ch == '"') {
-                        lexeme += ch
-                        i += 1
-                        tokens.add(Token(lexeme, linenumber, lexeme, TokenType.STRING))
-                        lexeme = ""
-                        0
-                    } else if ( (i+1) >= line.length ) {
-                        throw Error("Not matching quotes for String at $linenumber")
-                    } else {
-                        lexeme += ch
-                        i += 1
-                        12
-                    }
-                }
-                13 -> {
-                    state = if (ch == '\n') {
-                        0
-                    } else {
-                        13
-                    }
-                    i += 1
-                }
-                14 -> {
-                    state = if (ch == '*') {
-                        15
-                    } else {
-                        14
-                    }
-                    i += 1
-                }
-                15 -> {
-                    state = if (ch == '/') {
-                        0
-                    } else {
-                        14
-                    }
-                    i += 1
-                }
-                16 -> {
-                    when (ch) {
-                        in digits -> {
-                            lexeme += ch
-                            state = 16
-                            i += 1
-                        }
-                        '.' -> {
-                            lexeme += ch
-                            state = 17
-                            i += 1
-                        }
-                        'e' -> {
-                            lexeme += ch
-                            state = 19
-                            i += 1
-                        }
-                        else -> {
-                            tokens.add(Token(lexeme.toInt(), linenumber, lexeme, TokenType.INTEGER))
-                            lexeme = ""
-                            state = 0
-                        }
-                    }
-                }
-                17 -> {
-                    if (ch in digits) {
-                        lexeme += ch
-                        state = 18
-                        i += 1
-                    } else {
-                        throw Error("Bad Number definition at $linenumber")
-                    }
-                }
-                18 -> {
-                    when (ch) {
-                        in digits -> {
-                            lexeme += ch
-                            state = 18
-                            i += 1
-                        }
-                        'e' -> {
-                            lexeme += ch
-                            state = 19
-                            i += 1
-                        }
-                        else -> {
-                            tokens.add(Token(lexeme.toDouble(), linenumber, lexeme, TokenType.DOUBLE))
-                            lexeme = ""
-                            state = 0
-                        }
-                    }
-                }
-                19 -> {
-                    when (ch) {
-                        in digits -> {
-                            lexeme += ch
-                            state = 20
-                            i += 1
-                        }
-                        '+', '-' -> {
-                            lexeme += ch
-                            state = 21
-                            i += 1
-                        }
-                        else -> throw Error("Bad Number definition at $linenumber")
-                    }
-                }
-                20 -> {
-                    if (ch in digits) {
-                        lexeme += ch
-                        state = 20
-                        i += 1
-                    } else {
-                        tokens.add(Token(lexeme.toDouble(), linenumber, lexeme, TokenType.DOUBLE))
-                        lexeme = ""
-                        state = 0
-                    }
-                }
-                21 -> {
-                    if (ch in digits) {
-                        lexeme += ch
-                        state = 20
-                        i += 1
-                    } else {
-                        throw Error("Bad Number definition at $linenumber")
-                    }
-                }
-                22 -> {
-                    when (ch) {
-                        in digits, in uppercase, in lowercase, '_' -> {
-                            lexeme += ch
-                            state = 22
-                            i += 1
-                        }
-                        else -> {
-                            if (lexeme in reserved) {
-                                tokens.add(Token(null, linenumber, lexeme, reserved[lexeme]!!))
-                            } else {
-                                tokens.add(Token(null, linenumber, lexeme, TokenType.IDENTIFIER))
+    fun scan (): List<Token> {
+
+        var ch = nextChar()
+
+        var state = 0
+        var lexeme = ""
+
+        val tokens = mutableListOf<Token>()
+
+        while (ch != null) {
+            println("ch: $ch, lexeme: $lexeme, state: $state")
+            val transitions = table[state]!!
+            for (transition in transitions) {
+                if ((transition.accept == null) || (ch!! in transition.accept)) {
+                    state = transition.state
+                    for (action in transition.actions) {
+                        when (action) {
+                            Action.SAVE_CHAR -> {
+                                lexeme += ch
                             }
-                            lexeme = ""
-                            state = 0
+                            Action.CLEAR_LEXEME -> {
+                                lexeme = ""
+                            }
+                            Action.GRAB_NEXT_CHAR -> {
+                                ch = nextChar()
+                            }
+                            Action.ADD_TOKEN -> {
+                                when (transition.type) {
+                                    TokenType.IDENTIFIER -> {
+                                        if (lexeme in reserved) {
+                                            tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = reserved[lexeme]!!))
+                                        } else {
+                                            tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = TokenType.IDENTIFIER))
+                                        }
+                                    }
+                                    TokenType.INTEGER -> {
+                                        tokens.add(Token(value = lexeme.toInt(), line = lineIndex, lexeme = lexeme, type = TokenType.INTEGER))
+                                    }
+                                    TokenType.DOUBLE -> {
+                                        tokens.add(Token(value = lexeme.toDouble(), line = lineIndex, lexeme = lexeme, type = TokenType.DOUBLE))
+                                    }
+                                    else -> {
+                                        tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = transition.type!!))
+                                    }
+                                }
+                            }
+                            Action.ERROR -> {
+                                if (state == 12) {
+                                    throw Error("Failed to Scan String at line ${lineIndex + 1}:${charIndex + 1}")
+                                } else {
+                                    throw Error("Failed to Scan Number at line ${lineIndex + 1}:${charIndex + 1}")
+                                }
+                            }
                         }
                     }
+                    break
                 }
             }
         }
+
+        // flag token
+
+        tokens.add(Token(value = null, line = 0, lexeme = "", type = TokenType.EOF))
+
+        return tokens
+
     }
 
-    tokens.add(Token(null, 0, "", TokenType.EOF))
-
-    return tokens
-
 }
+
+enum class Action {
+    SAVE_CHAR,
+    GRAB_NEXT_CHAR,
+    CLEAR_LEXEME,
+    ADD_TOKEN,
+    ERROR
+}
+
+class Transition(
+    val accept: String?,
+    val state: Int,
+    val actions: List<Action>,
+    val type: TokenType? = null
+)
