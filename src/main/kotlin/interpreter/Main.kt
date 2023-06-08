@@ -4,25 +4,27 @@ import java.io.File
 
 fun main (args: Array<String>) {
 
-    val scanner = Scanner()
-
     if (args.isEmpty()) {
         while (true) {
+            // Prompting
             print(">> ")
             val line = readln()
             if (line == "exit()") break
-            val tokens = scanner.scan(listOf(line))
-            val parser = Parser(tokens)
-            parser.parse()
+            // Scanner creation
+            val scanner = Scanner(listOf(line))
+            val tokens = scanner.scan()
+            for (token in tokens) println(token.toString())
+            // Parser creation
+//            val parser = Parser(tokens)
+//            parser.parse()
         }
     } else {
+        // File Reading
         val input: List<String> = File(args[0]).readLines()
-        val tokens = scanner.scan(input)
-        for (token in tokens) {
-            println(token.toString())
-        }
-        val parser = Parser(tokens)
-        parser.parse()
+        // Scanner creation
+        val scanner = Scanner(input)
+        val tokens = scanner.scan()
+        for (token in tokens) println(token.toString())
     }
 
 }
