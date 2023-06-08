@@ -2,7 +2,7 @@
 package interpreter
 
 class Scanner (
-    private val lines: List<String>
+    private var lines: List<String>
 ) {
 
     private val reserved = hashMapOf(
@@ -162,28 +162,24 @@ class Scanner (
     private fun nextChar (): Char? {
         if (lines.isEmpty())
             return null
+        if (lineIndex >= lines.size)
+            return null
         val currentLine = lines[lineIndex]
-        if (charIndex >= currentLine.length) {
+        if ((currentLine.isEmpty()) || (charIndex >= currentLine.length)) {
             charIndex = 0
             lineIndex++
-            if (lineIndex >= lines.size) {
-                return null
-            }
+            return '\n'
         }
         return currentLine[charIndex++]
     }
 
     fun scan (): List<Token> {
-
         var ch = nextChar()
-
         var state = 0
         var lexeme = ""
-
         val tokens = mutableListOf<Token>()
-
         while (ch != null) {
-            println("ch: $ch, lexeme: $lexeme, state: $state")
+//            println("ch: $ch, lexeme: $lexeme, state: $state, position: ${lineIndex+1}:${charIndex+1}")
             val transitions = table[state]!!
             for (transition in transitions) {
                 if ((transition.accept == null) || (ch!! in transition.accept)) {
@@ -203,19 +199,19 @@ class Scanner (
                                 when (transition.type) {
                                     TokenType.IDENTIFIER -> {
                                         if (lexeme in reserved) {
-                                            tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = reserved[lexeme]!!))
+                                            tokens.add(Token(value = null, line = lineIndex+1, lexeme = lexeme, type = reserved[lexeme]!!))
                                         } else {
-                                            tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = TokenType.IDENTIFIER))
+                                            tokens.add(Token(value = null, line = lineIndex+1, lexeme = lexeme, type = TokenType.IDENTIFIER))
                                         }
                                     }
                                     TokenType.INTEGER -> {
-                                        tokens.add(Token(value = lexeme.toInt(), line = lineIndex, lexeme = lexeme, type = TokenType.INTEGER))
+                                        tokens.add(Token(value = lexeme.toInt(), line = lineIndex+1, lexeme = lexeme, type = TokenType.INTEGER))
                                     }
                                     TokenType.DOUBLE -> {
-                                        tokens.add(Token(value = lexeme.toDouble(), line = lineIndex, lexeme = lexeme, type = TokenType.DOUBLE))
+                                        tokens.add(Token(value = lexeme.toDouble(), line = lineIndex+1, lexeme = lexeme, type = TokenType.DOUBLE))
                                     }
                                     else -> {
-                                        tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = transition.type!!))
+                                        tokens.add(Token(value = null, line = lineIndex+1, lexeme = lexeme, type = transition.type!!))
                                     }
                                 }
                             }
