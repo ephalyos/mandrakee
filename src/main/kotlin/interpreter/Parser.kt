@@ -5,7 +5,7 @@ class Parser (
     private val tokens: List<Token>
 ) {
 
-//    private val eofT = Token(lexeme = "", type = TokenType.EOF)
+    private val eofT = Token(lexeme = "", type = TokenType.EOF)
     private val classT = Token(lexeme = "class", type = TokenType.CLASS)
     private val identifierT = Token(lexeme = "", type = TokenType.IDENTIFIER)
     private val funT = Token(lexeme = "fun", type = TokenType.FUN)
@@ -52,7 +52,10 @@ class Parser (
     fun parse () {
         current = tokens[i]
         program()
-        println("Valid program")
+        if (current == eofT)
+            println("Valid program")
+        else
+            println("Invalid program")
     }
 
     private fun match (t: Token) {
