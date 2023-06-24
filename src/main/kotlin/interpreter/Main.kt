@@ -19,15 +19,19 @@ fun main (args: Array<String>) {
             parser.parse()
         }
     } else {
+
         // File Reading
         val input: List<String> = File(args[0]).readLines()
+
         // Scanner creation
         val scanner = Scanner(input)
         val tokens = scanner.scan()
         for (token in tokens) println(token.toString())
+
         // Parser creation
         val parser = Parser(tokens)
         parser.parse()
+
     }
 
 }
