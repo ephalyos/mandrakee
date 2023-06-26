@@ -47,7 +47,7 @@ class Parser (
     private val commaT = Token(lexeme = ",", type = TokenType.COMMA)
 
     private var i = 0
-    private var current = Token(null, 0, "", TokenType.EOF)
+    private var current = Token(lexeme = "", type = TokenType.EOF)
 
     fun parse () {
         current = tokens[i]
