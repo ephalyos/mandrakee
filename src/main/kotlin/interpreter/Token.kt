@@ -23,7 +23,8 @@ class Token (
         return result
     }
 
-    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
+//    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
+    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme"
 
     fun isOperand (): Boolean {
         return when (type) {
