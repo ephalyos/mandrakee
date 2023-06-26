@@ -24,7 +24,7 @@ class Token (
     }
 
 //    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
-    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme"
+    override fun toString(): String = "Token: $lexeme"
 
     fun isOperand (): Boolean {
         return when (type) {
@@ -38,12 +38,14 @@ class Token (
 
     fun isOperator (): Boolean {
         return when (type) {
-            TokenType.ADDITION, TokenType.SUBSTRACT,
-            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
+            TokenType.ASSIGN, TokenType.ADDITION_ASSIGN, TokenType.SUBSTRACT_ASSIGN,
+            TokenType.MULTIPLICATION_ASSIGN, TokenType.DIVISION_ASSIGN, TokenType.MODULUS_ASSIGN,
+            TokenType.AND, TokenType.OR,
             TokenType.EQUALS, TokenType.NOT_EQUALS,
             TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN,
             TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
-            TokenType.AND, TokenType.OR,
+            TokenType.ADDITION, TokenType.SUBSTRACT,
+            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
             TokenType.NOT, TokenType.DOT-> {
                 true
             }
