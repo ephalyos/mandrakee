@@ -24,7 +24,7 @@ class Token (
     }
 
 //    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
-    override fun toString(): String = "Token: $lexeme"
+    override fun toString(): String = lexeme
 
     fun isOperand (): Boolean {
         return when (type) {
@@ -106,6 +106,7 @@ class Token (
             TokenType.NOT, TokenType.DOT -> {
                 1
             }
+            TokenType.ASSIGN,
             TokenType.ADDITION, TokenType.SUBSTRACT,
             TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
             TokenType.EQUALS, TokenType.NOT_EQUALS,
