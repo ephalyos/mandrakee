@@ -5,11 +5,11 @@ class Postfix (
     private val infix: List<Token>
 ) {
     private val postfix = mutableListOf<Token>()
-    private val stack = mutableListOf<Token>()
-    private val controlStack = mutableListOf<Token>()
 
     fun toPostfix (): List<Token> {
 
+        val stack = mutableListOf<Token>()
+        val controlStack = mutableListOf<Token>()
         var inControl = false
         var index = 0
 
