@@ -2,10 +2,10 @@
 package interpreter
 
 class Token (
-    private val value: Any? = null,
     val line: Int = 0,
-    private val lexeme: String,
     val type: TokenType,
+    private val lexeme: String,
+    private val value: Any? = null,
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -25,68 +25,124 @@ class Token (
 
     override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
 
+    fun isOperand (): Boolean {
+        return when (type) {
+            TokenType.IDENTIFIER, TokenType.STRING, TokenType.INTEGER, TokenType.DOUBLE,
+            TokenType.TRUE, TokenType.FALSE, TokenType.NIL -> {
+                true
+            }
+            else -> false
+        }
+    }
+
+    fun isOperator (): Boolean {
+        return when (type) {
+            TokenType.ADDITION, TokenType.SUBSTRACT,
+            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
+            TokenType.EQUALS, TokenType.NOT_EQUALS,
+            TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN,
+            TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
+            TokenType.AND, TokenType.OR,
+            TokenType.NOT, TokenType.DOT-> {
+                true
+            }
+            else -> false
+        }
+    }
+
+    fun isReserved (): Boolean {
+        return when (type) {
+            TokenType.IF, TokenType.ELSE, TokenType.WHILE, TokenType.FOR,
+            TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS,
+            TokenType.RETURN, TokenType.PRINT, TokenType.THIS, TokenType.SUPER -> {
+                true
+            }
+            else -> false
+        }
+    }
+
+    fun isControl (): Boolean {
+        return when(type) {
+            TokenType.IF, TokenType.ELSE, TokenType.WHILE, TokenType.FOR -> {
+                true
+            }
+            else -> false
+        }
+    }
+
+    fun precedence (): Int {
+        return when(type) {
+            TokenType.ASSIGN, TokenType.ADDITION_ASSIGN, TokenType.SUBSTRACT_ASSIGN,
+            TokenType.MULTIPLICATION_ASSIGN, TokenType.DIVISION_ASSIGN, TokenType.MODULUS_ASSIGN -> {
+                1
+            }
+            TokenType.AND, TokenType.OR -> {
+                2
+            }
+            TokenType.EQUALS, TokenType.NOT_EQUALS -> {
+                3
+            }
+            TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN, TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN -> {
+                4
+            }
+            TokenType.ADDITION, TokenType.SUBSTRACT -> {
+                5
+            }
+            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS -> {
+                6
+            }
+            TokenType.NOT, TokenType.DOT -> {
+                7
+            }
+            else -> 0
+        }
+    }
+
+    fun arity (): Int {
+        return when (type) {
+            TokenType.NOT, TokenType.DOT -> {
+                1
+            }
+            TokenType.ADDITION, TokenType.SUBSTRACT,
+            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
+            TokenType.EQUALS, TokenType.NOT_EQUALS,
+            TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN,
+            TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
+            TokenType.AND, TokenType.OR-> {
+                2
+            }
+            else -> 0
+        }
+    }
+
 }
 
 enum class TokenType {
 
-    IDENTIFIER,
+    IDENTIFIER, INTEGER, DOUBLE, STRING,
+    TRUE, FALSE, NIL,
 
-    INTEGER,
-    DOUBLE,
-    STRING,
-
-    ASSIGN,
-    EQUALS,
-    NOT_EQUALS,
-
-    NOT,
-
-    COMMA,
-    DOT,
-    COLON,
-    SEMI_COLON,
-
-    LESSER_THAN,
-    LESSER_EQUAL_THAN,
-    GREATER_THAN,
-    GREATER_EQUAL_THAN,
-
-    ADDITION,
-    ADDITION_ASSIGN,
-    SUBSTRACT,
-    SUBSTRACT_ASSIGN,
-    MULTIPLICATION,
-    MULTIPLICATION_ASSIGN,
-    DIVISION,
-    DIVISION_ASSIGN,
-    MODULUS,
-    MODULUS_ASSIGN,
-
-    LEFT_PARENTHESES,
-    RIGHT_PARENTHESES,
-    LEFT_BRACE,
-    RIGHT_BRACE,
-    LEFT_BRACKET,
-    RIGHT_BRACKET,
-
+    IF, ELSE, FOR, WHILE,
+    VAR, VAL, FUN, CLASS,
+    THIS, SUPER,
+    PRINT, RETURN,
     EOF,
 
-    IF,
-    ELSE,
-    VAR,
-    VAL,
-    WHILE,
-    FOR,
-    TRUE,
-    FALSE,
-    THIS,
-    FUN,
-    RETURN,
-    CLASS,
-    SUPER,
-    AND,
-    OR,
-    NIL,
-    PRINT,
+    COMMA, COLON, SEMI_COLON,
+
+    LEFT_PARENTHESES, RIGHT_PARENTHESES,
+    LEFT_BRACE, RIGHT_BRACE,
+    LEFT_BRACKET, RIGHT_BRACKET,
+
+    ASSIGN,
+    ADDITION_ASSIGN, SUBSTRACT_ASSIGN,
+    MULTIPLICATION_ASSIGN, DIVISION_ASSIGN, MODULUS_ASSIGN, // 1
+    AND, OR, // 2
+    EQUALS, NOT_EQUALS, // 3
+    LESSER_THAN, LESSER_EQUAL_THAN,
+    GREATER_THAN, GREATER_EQUAL_THAN, // 4
+    ADDITION, SUBSTRACT, // 5
+    MULTIPLICATION, DIVISION, MODULUS, // 6
+    NOT, DOT, // 7
 
 }
