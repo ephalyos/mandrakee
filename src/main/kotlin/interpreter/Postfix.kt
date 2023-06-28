@@ -17,15 +17,12 @@ class Postfix (
 
                 TokenType.EOF -> break
 
-                TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS -> {
+                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER,
+                TokenType.TRUE, TokenType.FALSE, TokenType.VAR, TokenType.PRINT -> {
                     postfix.add(token)
                 }
 
-                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER -> {
-                    postfix.add(token)
-                }
-
-                TokenType.IF -> {
+                TokenType.IF, TokenType.WHILE, TokenType.FOR -> {
                     postfix.add(token)
                     control.add(token)
                 }
@@ -37,18 +34,23 @@ class Postfix (
                 }
 
                 TokenType.LEFT_PARENTHESES -> {
-                    stack.add(token)
+                    if ( control.last().type != TokenType.FOR )
+                        stack.add(token)
                 }
 
                 TokenType.RIGHT_PARENTHESES -> {
                     while ( stack.isNotEmpty() && stack.last().type != TokenType.LEFT_PARENTHESES )
                         postfix.add(stack.removeLast())
-                    stack.removeLast()
+                    if ( stack.isNotEmpty() )
+                        stack.removeLast()
                 }
 
                 TokenType.LEFT_BRACE -> {
-                    if ( control.last().type == TokenType.IF )
+                    if ( control.last().type == TokenType.IF ||
+                        control.last().type == TokenType.WHILE ||
+                        control.last().type == TokenType.FOR ) {
                         postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";" ))
+                    }
                     stack.add(token)
                 }
 
