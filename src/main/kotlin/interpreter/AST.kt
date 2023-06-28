@@ -10,15 +10,14 @@ class AST (
         val stack = mutableListOf<Node<Token>>()
         val fathers = mutableListOf<Node<Token>>()
 
-        val root  = Node<Token>(Token(type = TokenType.EOF, lexeme = ""))
+        val root  = Node(Token(type = TokenType.EOF, lexeme = ""))
         fathers.add(root)
 
         for ( token in postfix ) {
 
             when ( token.type ) {
 
-                TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS,
-                TokenType.IF -> {
+                TokenType.VAR, TokenType.PRINT, TokenType.IF, TokenType.WHILE, TokenType.FOR -> {
                     val node = Node(token)
                     fathers.last().addChild(node)
                     fathers.add(node)
@@ -31,7 +30,8 @@ class AST (
                     fathers.add(node)
                 }
 
-                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER -> {
+                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER,
+                TokenType.TRUE, TokenType.FALSE -> {
                     stack.add(Node(token))
                 }
 
@@ -56,6 +56,10 @@ class AST (
                                 }
                                 else
                                     fathers.last().addChild(stack.removeLast())
+                                fathers.removeLast()
+                            }
+                            TokenType.PRINT -> {
+                                fathers.last().addChild(stack.removeLast())
                                 fathers.removeLast()
                             }
                             else -> {
