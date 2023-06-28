@@ -6,21 +6,21 @@ fun main (args: Array<String>) {
 
     if (args.isEmpty()) {
 
-        /*
-            "if (movie.isNational == true or (movie.isInternational == true and movie.rating > 67)) ;"
-            "if (a == 5) { \n b = 6; c = 7; \n } else { \n b = 5; \n }"
-            "fun main () { print 2+2; } "
-            "var mensaje = \"holis bolis\""
-            "(3 + 4) * (12 % 4) / 7 ;"
-        */
+        // " if (a == 5) { b = 6; } else { c = 8; } var b = 7; var c; "
+        // " if (true) { a = 5; } "
+        // " var nombre = \"Carlos\"; var apellido = \"Herrera\"; print nombre + \" \" + apellido; "
+        // " print \"el área es: \"; \n print area; "
+        // " if (area > 100 and radius < 50) { print \"valid\"; } else { print \"invalid\"; } "
+        // " while ( init <= lim ) { print fib; aux = aux + fib; } print \"finished\"; "
+        // " for ( init = 1 ; init <= lim ; init = init + 1 ) { print fib; aux = aux + fib; } print \"finished\"; "
 
-        val input = " if (a == 5) { b = 6; } else { c = 8; } var b = 7; "
+        val input = " while ( init <= lim ) { print fib; aux = aux + fib; } print \"finished\"; "
+
         val tokens = Scanner(listOf(input)).scan()
         val postfix = Postfix(tokens).toPostfix()
 
-        println(" --- POSTFIX --- ")
-        for (token in postfix) println(token.toString())
-
+        val root = AST(postfix).toAST()
+        root.printChildren()
 
     } else {
 
