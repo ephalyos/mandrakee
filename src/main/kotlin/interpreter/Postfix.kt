@@ -41,8 +41,10 @@ class Postfix (
                 TokenType.RIGHT_PARENTHESES -> {
                     while ( stack.isNotEmpty() && stack.last().type != TokenType.LEFT_PARENTHESES )
                         postfix.add(stack.removeLast())
-                    if ( stack.isNotEmpty() )
+                    if ( stack.isNotEmpty() && stack.last().type == TokenType.LEFT_PARENTHESES )
                         stack.removeLast()
+//                    if ( postfix.last().type == TokenType.WHILE )
+//                        postfix.add(Token(type = TokenType.TRUE, lexeme = "true"))
                 }
 
                 TokenType.LEFT_BRACE -> {
