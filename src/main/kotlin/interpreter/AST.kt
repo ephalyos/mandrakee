@@ -5,63 +5,73 @@ class AST (
     private val postfix: List<Token>
 ) {
 
-    fun makeAST (): Node<Token> {
+    fun toAST (): Node<Token> {
 
         val stack = mutableListOf<Node<Token>>()
-        val fatherStack = mutableListOf<Node<Token>>()
-        val root = Node(Token(type = TokenType.EOF, lexeme = ""))
+        val fathers = mutableListOf<Node<Token>>()
 
-        var father = root
-        fatherStack.add(root)
+        val root  = Node<Token>(Token(type = TokenType.EOF, lexeme = ""))
+        fathers.add(root)
 
-        for (token in postfix) {
-//            root.getChild()
-//            println("Stack: $stack")
-//            println("Father: $fatherStack")
-            if (token.isReserved()) {
-                val node = Node(token)
-                fatherStack.last().addChild(node)
-                fatherStack.add(node)
-                father = node
-            }
-            else if (token.isOperand()) {
-                stack.add(Node(token))
-            }
-            else if (token.isOperator()) {
-                val operator = Node(token)
-                for (i in 1..token.arity()) {
-                    operator.addChild(stack.removeLast())
+        for ( token in postfix ) {
+
+            when ( token.type ) {
+
+                TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS,
+                TokenType.IF -> {
+                    val node = Node(token)
+                    fathers.last().addChild(node)
+                    fathers.add(node)
                 }
-                stack.add(operator)
-            }
-            else if (token.type == TokenType.SEMI_COLON) {
-                if (stack.isEmpty()) {
-                    fatherStack.removeLast()
-                    father = fatherStack.last()
+
+                TokenType.ELSE -> {
+                    val node = Node(token)
+                    fathers.last().addChild(node)
+                    fathers.removeLast()
+                    fathers.add(node)
                 }
-                else {
-                    val temp = stack.removeLast()
-                    when (father.value.type) {
-                        TokenType.VAR -> {
-                            father.addChildren(temp.children)
-                            fatherStack.removeLast()
-                            father = fatherStack.last()
-                        }
-                        TokenType.PRINT -> {
-                            father.addChild(temp)
-                            fatherStack.removeLast()
-                            father = fatherStack.last()
-                        }
-                        else -> {
-                            father.addChild(temp)
+
+                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER -> {
+                    stack.add(Node(token))
+                }
+
+                TokenType.ASSIGN, TokenType.AND, TokenType.OR, TokenType.EQUALS, TokenType.NOT_EQUALS,
+                TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN, TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
+                TokenType.ADDITION, TokenType.SUBSTRACT, TokenType.MULTIPLICATION, TokenType.DIVISION -> {
+                    val node = Node(token)
+                    for ( i in 1..token.arity() )
+                        node.addChild(stack.removeLast())
+                    stack.add(node)
+                }
+
+                TokenType.SEMI_COLON -> {
+                    if ( stack.isEmpty() )
+                        fathers.removeLast()
+                    else {
+                        when ( fathers.last().value.type ) {
+                            TokenType.VAR -> {
+                                if ( stack.last().value.type == TokenType.ASSIGN ){
+                                    fathers.last().addChildren(stack.last().children)
+                                    stack.removeLast()
+                                }
+                                else
+                                    fathers.last().addChild(stack.removeLast())
+                                fathers.removeLast()
+                            }
+                            else -> {
+                                fathers.last().addChild(stack.removeLast())
+                            }
                         }
                     }
                 }
+
+                else -> break
+
             }
+
         }
 
         return root
-
     }
 
 }
