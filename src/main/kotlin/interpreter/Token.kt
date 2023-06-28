@@ -26,57 +26,9 @@ class Token (
 //    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
     override fun toString(): String = lexeme
 
-    fun isOperand (): Boolean {
-        return when (type) {
-            TokenType.IDENTIFIER, TokenType.STRING, TokenType.INTEGER, TokenType.DOUBLE,
-            TokenType.TRUE, TokenType.FALSE, TokenType.NIL -> {
-                true
-            }
-            else -> false
-        }
-    }
-
-    fun isOperator (): Boolean {
-        return when (type) {
-            TokenType.ASSIGN, TokenType.ADDITION_ASSIGN, TokenType.SUBSTRACT_ASSIGN,
-            TokenType.MULTIPLICATION_ASSIGN, TokenType.DIVISION_ASSIGN, TokenType.MODULUS_ASSIGN,
-            TokenType.AND, TokenType.OR,
-            TokenType.EQUALS, TokenType.NOT_EQUALS,
-            TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN,
-            TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
-            TokenType.ADDITION, TokenType.SUBSTRACT,
-            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
-            TokenType.NOT, TokenType.DOT-> {
-                true
-            }
-            else -> false
-        }
-    }
-
-    fun isReserved (): Boolean {
-        return when (type) {
-            TokenType.IF, TokenType.ELSE, TokenType.WHILE, TokenType.FOR,
-            TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS,
-            TokenType.RETURN, TokenType.PRINT, TokenType.THIS, TokenType.SUPER -> {
-                true
-            }
-            else -> false
-        }
-    }
-
-    fun isControl (): Boolean {
-        return when(type) {
-            TokenType.IF, TokenType.ELSE, TokenType.WHILE, TokenType.FOR -> {
-                true
-            }
-            else -> false
-        }
-    }
-
     fun precedence (): Int {
         return when(type) {
-            TokenType.ASSIGN, TokenType.ADDITION_ASSIGN, TokenType.SUBSTRACT_ASSIGN,
-            TokenType.MULTIPLICATION_ASSIGN, TokenType.DIVISION_ASSIGN, TokenType.MODULUS_ASSIGN -> {
+            TokenType.ASSIGN -> {
                 1
             }
             TokenType.AND, TokenType.OR -> {
@@ -91,7 +43,7 @@ class Token (
             TokenType.ADDITION, TokenType.SUBSTRACT -> {
                 5
             }
-            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS -> {
+            TokenType.MULTIPLICATION, TokenType.DIVISION -> {
                 6
             }
             TokenType.NOT, TokenType.DOT -> {
@@ -103,17 +55,16 @@ class Token (
 
     fun arity (): Int {
         return when (type) {
+            TokenType.ASSIGN, TokenType.AND, TokenType.OR,
+            TokenType.EQUALS, TokenType.NOT_EQUALS,
+            TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
+            TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN,
+            TokenType.ADDITION, TokenType.SUBSTRACT,
+            TokenType.MULTIPLICATION, TokenType.DIVISION -> {
+                2
+            }
             TokenType.NOT, TokenType.DOT -> {
                 1
-            }
-            TokenType.ASSIGN,
-            TokenType.ADDITION, TokenType.SUBSTRACT,
-            TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULUS,
-            TokenType.EQUALS, TokenType.NOT_EQUALS,
-            TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN,
-            TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
-            TokenType.AND, TokenType.OR-> {
-                2
             }
             else -> 0
         }
