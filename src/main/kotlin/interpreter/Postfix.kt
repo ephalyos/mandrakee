@@ -1,85 +1,86 @@
 
 package interpreter
 
+import java.awt.SystemColor.control
+
 class Postfix (
     private val infix: List<Token>
 ) {
+
     private val postfix = mutableListOf<Token>()
 
     fun toPostfix (): List<Token> {
 
         val stack = mutableListOf<Token>()
-        val controlStack = mutableListOf<Token>()
-        var inControl = false
-        var index = 0
+        val control = mutableListOf<Token>()
 
-        for (token in infix) {
-            index++
-            if (token.type == TokenType.EOF) {
-               break
-            }
-            else if (token.isReserved()) {
-                postfix.add(token)
-                if (token.isControl()) {
-                    inControl = true
-                    controlStack.add(token)
+        for (token in infix ) {
+
+            when ( token.type ) {
+
+                TokenType.EOF -> break
+
+                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER -> {
+                    postfix.add(token)
                 }
-            }
-            else if (token.isOperand()) {
-               postfix.add(token)
-            }
-            else if (token.isOperator()) {
-               while (stack.isNotEmpty() && stack.last().precedence() >= token.precedence()) {
-                   postfix.add(stack.removeLast())
-               }
-               stack.add(token)
-            }
-            else if (token.type == TokenType.LEFT_PARENTHESES) {
-                stack.add(token)
-            }
-            else if (token.type == TokenType.RIGHT_PARENTHESES) {
-                while (stack.isNotEmpty() && stack.last().type != TokenType.LEFT_PARENTHESES) {
-                    postfix.add(stack.removeLast())
+
+                TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS -> {
+                    postfix.add(token)
                 }
-                if (stack.last().type == TokenType.LEFT_PARENTHESES)
-                    stack.removeLast()
-                if (inControl) {
-                    postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";"))
+
+                TokenType.IF -> {
+                    postfix.add(token)
+                    control.add(token)
                 }
-            }
-            else if (token.type == TokenType.LEFT_BRACE) {
-                stack.add(token)
-            }
-            else if (token.type == TokenType.RIGHT_BRACE && inControl) {
-                if (infix[index].type == TokenType.ELSE) {
+
+                TokenType.ELSE -> {
+                    postfix.removeLast()    // remove the ';' added by closing '}' of 'if'
+                    postfix.add(token)
+                    control.add(token)
+                }
+
+                TokenType.LEFT_PARENTHESES -> {
+                    stack.add(token)
+                }
+
+                TokenType.RIGHT_PARENTHESES -> {
+                    while ( stack.isNotEmpty() && stack.last().type != TokenType.LEFT_PARENTHESES )
+                        postfix.add(stack.removeLast())
                     stack.removeLast()
                 }
-                else {
+
+                TokenType.LEFT_BRACE -> {
+                    if ( control.last().type == TokenType.IF )
+                        postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";" ))
+                    stack.add(token)
+                }
+
+                TokenType.RIGHT_BRACE -> {
                     stack.removeLast()
-                    postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";"))
-                    controlStack.removeLast()
-                    if (controlStack.isEmpty())
-                        inControl = false
+                    control.removeLast()
+                    postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";" ))
                 }
-            }
-            else if (token.type == TokenType.SEMI_COLON) {
-                while (stack.isNotEmpty() && stack.last().type != TokenType.LEFT_BRACE) {
-                    postfix.add(stack.removeLast())
+
+                TokenType.SEMI_COLON -> {
+                    while ( stack.isNotEmpty() && stack.last().type != TokenType.LEFT_BRACE )
+                        postfix.add(stack.removeLast())
+                    postfix.add(token)
                 }
-                postfix.add(token)
+
+                TokenType.ASSIGN, TokenType.AND, TokenType.OR, TokenType.EQUALS, TokenType.NOT_EQUALS,
+                TokenType.LESSER_THAN, TokenType.LESSER_EQUAL_THAN, TokenType.GREATER_THAN, TokenType.GREATER_EQUAL_THAN,
+                TokenType.ADDITION, TokenType.SUBSTRACT, TokenType.MULTIPLICATION, TokenType.DIVISION -> {
+                    while ( stack.isNotEmpty() && stack.last().precedence() >= token.precedence() )
+                        postfix.add(stack.removeLast())
+                    stack.add(token)
+                }
+
+                else -> break
+
             }
-        }
-
-        while (stack.isNotEmpty())
-            postfix.add(stack.removeLast())
-
-        while (controlStack.isNotEmpty()) {
-            controlStack.removeLast()
-            postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";"))
         }
 
         return postfix
-
     }
 
 }
