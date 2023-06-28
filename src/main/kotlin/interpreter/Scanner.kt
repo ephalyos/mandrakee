@@ -217,9 +217,9 @@ class Scanner (
                             }
                             Action.ERROR -> {
                                 if (state == 12) {
-                                    throw Error("Failed to Scan String at line ${lineIndex + 1}:${charIndex + 1}")
+                                    throw Error("Failed to Scan String at line $lineIndex:$charIndex")
                                 } else {
-                                    throw Error("Failed to Scan Number at line ${lineIndex + 1}:${charIndex + 1}")
+                                    throw Error("Failed to Scan Number at line $lineIndex:$charIndex")
                                 }
                             }
                         }
