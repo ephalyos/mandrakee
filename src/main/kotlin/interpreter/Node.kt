@@ -17,11 +17,11 @@ class Node<T> (
         }
     }
 
-    fun getChild ( depth: Int = 1) {
+    fun printChildren ( depth: Int = 0) {
         for (child in children) {
             val spaces = "--".repeat(depth)
             println("$spaces${child.value}")
-            child.getChild(depth + 1)
+            child.printChildren(depth + 1)
         }
     }
 
