@@ -13,16 +13,15 @@ class Postfix (
         val control = mutableListOf<Token>()
 
         for (token in infix ) {
-
             when ( token.type ) {
 
                 TokenType.EOF -> break
 
-                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER -> {
+                TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS -> {
                     postfix.add(token)
                 }
 
-                TokenType.VAR, TokenType.VAL, TokenType.FUN, TokenType.CLASS -> {
+                TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.IDENTIFIER -> {
                     postfix.add(token)
                 }
 
@@ -76,6 +75,14 @@ class Postfix (
                 else -> break
 
             }
+        }
+
+        while ( stack.isNotEmpty() )
+            postfix.add(stack.removeLast())
+
+        while ( control.isNotEmpty() ){
+            control.removeLast()
+            postfix.add(Token(type = TokenType.SEMI_COLON, lexeme = ";" ))
         }
 
         return postfix
