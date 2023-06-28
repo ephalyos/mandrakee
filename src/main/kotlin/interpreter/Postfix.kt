@@ -1,8 +1,6 @@
 
 package interpreter
 
-import java.awt.SystemColor.control
-
 class Postfix (
     private val infix: List<Token>
 ) {
