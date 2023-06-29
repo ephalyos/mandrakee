@@ -56,6 +56,12 @@ class Node (
             TokenType.VAR -> {
                 SolverVar(node = this).solve()
             }
+            TokenType.ASSIGN -> {
+                SolverAssignment(node = this).solve()
+            }
+            TokenType.AND, TokenType.OR -> {
+                SolverBool(node = this).solve()
+            }
             else -> null
         }
     }
