@@ -4,10 +4,12 @@ class SymbolTable {
     companion object {
 
         private val table = mutableMapOf<String, Any>()
+
         fun retrieve ( key: String ): Any? {
             if (table.contains(key))
                 return table[key]
-            return null
+            else
+                throw Error("Identifier $key is undefined")
         }
 
         fun update ( key: String, value: Any ) {
