@@ -4,7 +4,7 @@ package interpreter
 class Token (
     val line: Int = 0,
     val type: TokenType,
-    private val lexeme: String,
+    val lexeme: String,
     val value: Any? = null,
 ) {
 
