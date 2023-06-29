@@ -27,11 +27,20 @@ class Node (
 
     fun solve (): Any? {
         return when ( value.type ) {
-            TokenType.INTEGER, TokenType.DOUBLE -> {
-                value.value
+            TokenType.IDENTIFIER -> {
+                SymbolTable.retrieve(value.lexeme)
             }
             TokenType.STRING -> {
                 value.lexeme
+            }
+            TokenType.TRUE -> {
+                true
+            }
+            TokenType.FALSE -> {
+                false
+            }
+            TokenType.INTEGER, TokenType.DOUBLE -> {
+                value.value
             }
             TokenType.ADDITION, TokenType.SUBSTRACT, TokenType.MULTIPLICATION, TokenType.DIVISION -> {
                 SolverArithmetic(node = this).solve()
@@ -39,13 +48,11 @@ class Node (
             TokenType.PRINT -> {
                 SolverPrint(node = this).solve()
             }
-//            TokenType.EQUALS, TokenType.NOT_EQUALS, TokenType.GREATER_THAN, TokenType.LESSER_THAN,
-//            TokenType.GREATER_EQUAL_THAN, TokenType.LESSER_EQUAL_THAN -> {
-//
-//            }
-//            TokenType.IF, TokenType.ELSE -> {
-//                1
-//            }
+            TokenType.EQUALS, TokenType.NOT_EQUALS,
+            TokenType.GREATER_THAN, TokenType.LESSER_THAN,
+            TokenType.GREATER_EQUAL_THAN, TokenType.LESSER_EQUAL_THAN -> {
+                SolverComparison(node = this).solve()
+            }
             else -> null
         }
     }
