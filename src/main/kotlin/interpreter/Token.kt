@@ -5,7 +5,7 @@ class Token (
     val line: Int = 0,
     val type: TokenType,
     private val lexeme: String,
-    private val value: Any? = null,
+    val value: Any? = null,
 ) {
 
     override fun equals(other: Any?): Boolean {
