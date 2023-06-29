@@ -24,7 +24,7 @@ class Token (
     }
 
 //    override fun toString(): String = "Token: ${type.name} with lexeme: $lexeme found at: $line with value: $value"
-    override fun toString(): String = lexeme
+    override fun toString(): String = "$lexeme ${type.name}"
 
     fun precedence (): Int {
         return when(type) {
