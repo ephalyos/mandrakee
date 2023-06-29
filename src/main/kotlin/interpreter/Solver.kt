@@ -10,6 +10,10 @@ class SolverArithmetic (
             TokenType.ADDITION -> {
                 if ( left is String && right is String ) {
                     "$left$right"
+                } else if ( left is String && right is Int ) {
+                    "$left$right"
+                } else if ( left is Int && right is String ) {
+                    "$left$right"
                 } else {
                     (left as Int) + (right as Int)
                 }
@@ -146,3 +150,17 @@ class SolverIf (
     }
 }
 
+class SolverWhile (
+    private val node: Node
+) {
+    fun solve () {
+        var condition = node.children[0].solve()
+        if ( condition !is Boolean )
+            throw Error("Condition Expression Must Be Boolean")
+        while ( condition as Boolean ) {
+            for ( i in 1 until node.children.size)
+                node.children[i].solve()
+            condition = node.children[0].solve()
+        }
+    }
+}

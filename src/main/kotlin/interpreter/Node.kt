@@ -65,6 +65,9 @@ class Node (
             TokenType.IF -> {
                 SolverIf(node = this).solve()
             }
+            TokenType.WHILE -> {
+                SolverWhile(node = this).solve()
+            }
             else -> null
         }
     }
