@@ -26,7 +26,7 @@ fun main (args: Array<String>) {
             val root = AST(postfix).toAST()
 
             // Execution
-//             root.printChildren()
+            // root.printChildren()
             root.run()
 
         }
@@ -49,7 +49,7 @@ fun main (args: Array<String>) {
         val root = AST(postfix).toAST()
 
         // Execution
-//        root.printChildren()
+        // root.printChildren()
         root.run()
 
     }
