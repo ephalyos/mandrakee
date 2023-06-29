@@ -12,20 +12,54 @@ class SolverArithmetic (
                     "$left$right"
                 } else if ( left is String && right is Int ) {
                     "$left$right"
+                } else if ( left is String && right is Double ) {
+                    "$left$right"
                 } else if ( left is Int && right is String ) {
                     "$left$right"
+                } else if ( left is Double && right is String ) {
+                    "$left$right"
+                } else if ( left is Int && right is Int ) {
+                    left + right
+                } else if ( left is Int && right is Double ) {
+                    left + right
+                } else if ( left is Double && right is Int ) {
+                    left + right
+                } else if ( left is Double && right is Double ) {
+                    left + right
                 } else {
-                    (left as Int) + (right as Int)
+                    throw Error("Unsupported Type Operation")
                 }
             }
             TokenType.SUBSTRACT -> {
-                (left as Int) - (right as Int)
+                if ( left is Double && right is Double ) {
+                    left - right
+                } else if ( left is Int && right is Int ) {
+                    left - right
+                } else {
+                    throw Error("Unsupported Type Operation")
+                }
             }
             TokenType.MULTIPLICATION -> {
-                (left as Int) * (right as Int)
+                if ( left is Double && right is Double ) {
+                    left * right
+                } else if ( left is Int && right is Int ) {
+                    left * right
+                } else if ( left is Int && right is Double ) {
+                    left * right
+                } else if ( left is Double && right is Int ) {
+                    left * right
+                } else {
+                    throw Error("Unsupported Type Operation")
+                }
             }
             TokenType.DIVISION -> {
-                (left as Int) / (right as Int)
+                if ( left is Double && right is Double ) {
+                    left / right
+                } else if ( left is Int && right is Int ) {
+                    left / right
+                } else {
+                    throw Error("Unsupported Type Operation")
+                }
             }
             else -> throw Error("Unsupported Operation")
         }
@@ -46,28 +80,44 @@ class SolverComparison (
                 left != right
             }
             TokenType.GREATER_THAN -> {
-                if ( left is Int && right is Int )
+                if ( left is Double && right is Double ) {
                     left > right
-                else
+                } else if ( left is Int && right is Int ) {
+                    left > right
+                } else if ( left is Int && right is Double ) {
+                    left > right
+                } else if ( left is Double && right is Int ) {
+                    left > right
+                } else {
                     throw Error("Unsupported Type Operation")
+                }
             }
             TokenType.LESSER_THAN -> {
-                if ( left is Int && right is Int )
+                if ( left is Double && right is Double ) {
                     left < right
-                else
+                } else if ( left is Int && right is Int ) {
+                    left < right
+                } else {
                     throw Error("Unsupported Type Operation")
+                }
             }
             TokenType.GREATER_EQUAL_THAN -> {
-                if ( left is Int && right is Int )
+                if ( left is Double && right is Double ) {
                     left >= right
-                else
+                } else if ( left is Int && right is Int ) {
+                    left >= right
+                } else {
                     throw Error("Unsupported Type Operation")
+                }
             }
             TokenType.LESSER_EQUAL_THAN -> {
-                if ( left is Int && right is Int )
+                if ( left is Double && right is Double ) {
                     left <= right
-                else
+                } else if ( left is Int && right is Int ) {
+                    left <= right
+                } else {
                     throw Error("Unsupported Type Operation")
+                }
             }
             else -> throw Error("Unsupported Operation")
         }
@@ -133,20 +183,25 @@ class SolverIf (
     private val node: Node
 ) {
     fun solve () {
+
         val condition = node.children[0].solve()
+        val elseBody = if ( node.children.last().value.type == TokenType.ELSE ) node.children.last() else null
+
         if ( condition !is Boolean )
             throw Error("Condition Expression Must Be Boolean")
+
         if ( condition ) {
             for ( i in 1..(node.children.size - 2))
                 node.children[i].solve()
         }
-        if ( condition && node.children.last().value.type != TokenType.ELSE ){
-            node.children.last().solve()
-        } else {
-            val elseBody = node.children.last()
+
+        if ( elseBody != null  && condition == false) {
             for ( child in elseBody.children )
                 child.solve()
+        } else if ( elseBody == null && condition == true ){
+            node.children.last().solve()
         }
+
     }
 }
 
@@ -154,14 +209,17 @@ class SolverWhile (
     private val node: Node
 ) {
     fun solve () {
+
         val condition = node.children[0]
+
         if ( condition.solve() !is Boolean )
             throw Error("Condition Expression Must Be Boolean")
+
         while ( condition.solve() as Boolean ) {
             for ( i in 1 until node.children.size)
                 node.children[i].solve()
-            condition.solve()
         }
+
     }
 }
 
@@ -169,17 +227,21 @@ class SolverFor (
     private val node: Node
 ) {
     fun solve () {
+
         val initialize = node.children[0]
         val condition = node.children[1]
         val step = node.children[2]
+
         initialize.solve()
+
         if ( condition.solve() !is Boolean )
             throw Error("Condition Expression Must Be Boolean")
+
         while ( condition.solve() as Boolean ) {
             for ( i in 3 until node.children.size )
                 node.children[i].solve()
             step.solve()
-            condition.solve()
         }
+
     }
 }
