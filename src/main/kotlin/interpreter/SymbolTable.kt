@@ -5,9 +5,9 @@ class SymbolTable {
 
         private val table = mutableMapOf<String, Any>()
 
-        fun retrieve ( key: String ): Any? {
+        fun retrieve ( key: String ): Any {
             if (table.contains(key))
-                return table[key]
+                return table[key]!!
             else
                 throw Error("Identifier $key is undefined")
         }
