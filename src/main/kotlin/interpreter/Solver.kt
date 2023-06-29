@@ -3,7 +3,6 @@ package interpreter
 class SolverArithmetic (
     private val node: Node
 ) {
-
     fun solve (): Any {
         val left = node.children[1].solve()
         val right = node.children[0].solve()
@@ -23,5 +22,13 @@ class SolverArithmetic (
             else -> throw Error("Unsupported Operation")
         }
     }
+}
 
+class SolverPrint (
+    private val node: Node
+) {
+    fun solve () {
+        val child = node.children[0].solve()
+        println(child)
+    }
 }
