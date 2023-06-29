@@ -107,12 +107,12 @@ class SolverVar (
     private val node: Node
 ) {
     fun solve () {
-        val left = node.children[1].value        // will be an undefined identifier
-        val right = node.children[0].solve()
-        if ( left.type != TokenType.IDENTIFIER )
+        val value = if ( node.children.size > 1 ) node.children[0].solve() else 0
+        val identifier = if ( node.children.size > 1 ) node.children[1] else node.children[0]
+        if ( identifier.value.type != TokenType.IDENTIFIER )
             throw Error("Left Side Must be an Identifier")
         else
-            SymbolTable.add(key = left.lexeme, value = right!!)
+            SymbolTable.add(key = identifier.value.lexeme, value = value)
     }
 }
 
@@ -125,7 +125,7 @@ class SolverAssignment (
         if ( left.type != TokenType.IDENTIFIER )
             throw Error("Left Side Must be an Identifier")
         else
-            SymbolTable.update(key = left.lexeme, value = right!!)
+            SymbolTable.update(key = left.lexeme, value = right)
     }
 }
 
