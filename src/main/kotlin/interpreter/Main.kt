@@ -14,7 +14,7 @@ fun main (args: Array<String>) {
         // " while ( init <= lim ) { print fib; aux = aux + fib; } print \"finished\"; "
         // " for ( init = 1 ; init <= lim ; init = init + 1 ) { print fib; aux = aux + fib; } print \"finished\"; "
 
-        val input = " 3 - 4 + 2 ; "
+        val input = " print 5 + 4; print \"hello\"; "
 
         val tokens = Scanner(listOf(input)).scan()
         val postfix = Postfix(tokens).toPostfix()
