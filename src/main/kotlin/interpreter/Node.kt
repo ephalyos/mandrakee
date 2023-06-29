@@ -1,17 +1,17 @@
 
 package interpreter
 
-class Node<T> (
-    val value: T,
+class Node (
+    val value: Token,
 ) {
 
-    val children = mutableListOf<Node<T>>()
+    val children = mutableListOf<Node>()
 
-    fun addChild ( node: Node<T> ) {
+    fun addChild ( node: Node ) {
         children.add(node)
     }
 
-    fun addChildren (children: List<Node<T>> ) {
+    fun addChildren (children: List<Node>) {
         for ( child in children ) {
             addChild(child)
         }
@@ -22,6 +22,31 @@ class Node<T> (
             val spaces = "--".repeat(depth)
             println("$spaces${child.value}")
             child.printChildren(depth + 1)
+        }
+    }
+
+    fun solve (): Any? {
+        return when ( value.type ) {
+            TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING -> {
+                value.value
+            }
+            TokenType.ADDITION, TokenType.SUBSTRACT, TokenType.MULTIPLICATION, TokenType.DIVISION -> {
+                SolverArithmetic(node = this).solve()
+            }
+//            TokenType.EQUALS, TokenType.NOT_EQUALS, TokenType.GREATER_THAN, TokenType.LESSER_THAN,
+//            TokenType.GREATER_EQUAL_THAN, TokenType.LESSER_EQUAL_THAN -> {
+//
+//            }
+//            TokenType.IF, TokenType.ELSE -> {
+//                1
+//            }
+            else -> null
+        }
+    }
+
+    fun run () {
+        for ( node in children ) {
+            node.solve()
         }
     }
 
