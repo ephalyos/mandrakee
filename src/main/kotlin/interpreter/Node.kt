@@ -27,11 +27,17 @@ class Node (
 
     fun solve (): Any? {
         return when ( value.type ) {
-            TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING -> {
+            TokenType.INTEGER, TokenType.DOUBLE -> {
                 value.value
+            }
+            TokenType.STRING -> {
+                value.lexeme
             }
             TokenType.ADDITION, TokenType.SUBSTRACT, TokenType.MULTIPLICATION, TokenType.DIVISION -> {
                 SolverArithmetic(node = this).solve()
+            }
+            TokenType.PRINT -> {
+                SolverPrint(node = this).solve()
             }
 //            TokenType.EQUALS, TokenType.NOT_EQUALS, TokenType.GREATER_THAN, TokenType.LESSER_THAN,
 //            TokenType.GREATER_EQUAL_THAN, TokenType.LESSER_EQUAL_THAN -> {
