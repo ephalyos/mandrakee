@@ -124,3 +124,25 @@ class SolverAssignment (
             SymbolTable.update(key = left.lexeme, value = right!!)
     }
 }
+
+class SolverIf (
+    private val node: Node
+) {
+    fun solve () {
+        val condition = node.children[0].solve()
+        if ( condition !is Boolean )
+            throw Error("Condition Expression Must Be Boolean")
+        if ( condition ) {
+            for ( i in 1..(node.children.size - 2))
+                node.children[i].solve()
+        }
+        if ( condition && node.children.last().value.type != TokenType.ELSE ){
+            node.children.last().solve()
+        } else {
+            val elseBody = node.children.last()
+            for ( child in elseBody.children )
+                child.solve()
+        }
+    }
+}
+

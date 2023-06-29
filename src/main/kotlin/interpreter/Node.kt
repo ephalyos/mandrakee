@@ -62,6 +62,9 @@ class Node (
             TokenType.AND, TokenType.OR -> {
                 SolverBool(node = this).solve()
             }
+            TokenType.IF -> {
+                SolverIf(node = this).solve()
+            }
             else -> null
         }
     }
