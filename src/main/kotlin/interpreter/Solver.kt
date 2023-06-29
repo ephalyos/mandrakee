@@ -154,13 +154,32 @@ class SolverWhile (
     private val node: Node
 ) {
     fun solve () {
-        var condition = node.children[0].solve()
-        if ( condition !is Boolean )
+        val condition = node.children[0]
+        if ( condition.solve() !is Boolean )
             throw Error("Condition Expression Must Be Boolean")
-        while ( condition as Boolean ) {
+        while ( condition.solve() as Boolean ) {
             for ( i in 1 until node.children.size)
                 node.children[i].solve()
-            condition = node.children[0].solve()
+            condition.solve()
+        }
+    }
+}
+
+class SolverFor (
+    private val node: Node
+) {
+    fun solve () {
+        val initialize = node.children[0]
+        val condition = node.children[1]
+        val step = node.children[2]
+        initialize.solve()
+        if ( condition.solve() !is Boolean )
+            throw Error("Condition Expression Must Be Boolean")
+        while ( condition.solve() as Boolean ) {
+            for ( i in 3 until node.children.size )
+                node.children[i].solve()
+            step.solve()
+            condition.solve()
         }
     }
 }
