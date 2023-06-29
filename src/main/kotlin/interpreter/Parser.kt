@@ -53,7 +53,7 @@ class Parser (
         current = tokens[i]
         program()
         if (current == eofT)
-            println("Valid program")
+//            println("Valid program")
         else
             println("Invalid program")
     }
