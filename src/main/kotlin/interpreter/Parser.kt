@@ -52,9 +52,7 @@ class Parser (
     fun parse () {
         current = tokens[i]
         program()
-        if (current == eofT)
-//            println("Valid program")
-        else
+        if (current != eofT)
             println("Invalid program")
     }
 
