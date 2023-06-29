@@ -25,7 +25,7 @@ class Node (
         }
     }
 
-    fun solve (): Any? {
+    fun solve (): Any {
         return when ( value.type ) {
             TokenType.IDENTIFIER -> {
                 SymbolTable.retrieve(value.lexeme)
@@ -71,8 +71,8 @@ class Node (
             TokenType.FOR -> {
                 SolverFor(node = this).solve()
             }
-            else -> null
-        }
+            else -> value
+        }!!
     }
 
     fun run () {
