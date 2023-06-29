@@ -5,10 +5,10 @@ class AST (
     private val postfix: List<Token>
 ) {
 
-    fun toAST (): Node<Token> {
+    fun toAST (): Node {
 
-        val stack = mutableListOf<Node<Token>>()
-        val fathers = mutableListOf<Node<Token>>()
+        val stack = mutableListOf<Node>()
+        val fathers = mutableListOf<Node>()
 
         val root  = Node(Token(type = TokenType.EOF, lexeme = ""))
         fathers.add(root)
