@@ -78,3 +78,16 @@ class SolverComparison (
         }
     }
 }
+
+class SolverVar (
+    private val node: Node
+) {
+    fun solve () {
+        val left = node.children[1].value        // will be an undefined identifier
+        val right = node.children[0].solve()
+        if ( left.type != TokenType.IDENTIFIER )
+            throw Error("Left Side Must be an Identifier")
+        else
+            SymbolTable.add(key = left.lexeme, value = right!!)
+    }
+}

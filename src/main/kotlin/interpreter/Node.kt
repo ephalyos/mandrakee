@@ -53,6 +53,9 @@ class Node (
             TokenType.GREATER_EQUAL_THAN, TokenType.LESSER_EQUAL_THAN -> {
                 SolverComparison(node = this).solve()
             }
+            TokenType.VAR -> {
+                SolverVar(node = this).solve()
+            }
             else -> null
         }
     }
