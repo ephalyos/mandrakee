@@ -50,7 +50,7 @@ class Scanner (
             Transition(accept = "%", state = 9, actions = listOf(save, grab)),
             Transition(accept = "=", state = 10, actions = listOf(save, grab)),
             Transition(accept = "!", state = 11, actions = listOf(save, grab)),
-            Transition(accept = "\"", state = 12, actions = listOf(save, grab)),
+            Transition(accept = "\"", state = 12, actions = listOf(grab)),
             Transition(accept = digits, state = 16, actions = listOf(save, grab)),
             Transition(accept = "$lowercase$uppercase", state = 22, actions = listOf(save, grab)),
             Transition(accept = null, state = 2, actions = listOf()),
@@ -106,7 +106,7 @@ class Scanner (
             Transition(accept = null, state = 0, actions = listOf(add, clear), type = TokenType.NOT),
         ),
         12 to listOf(
-            Transition(accept = "\"", state = 0, actions = listOf(save, add, clear, grab), type = TokenType.STRING),
+            Transition(accept = "\"", state = 0, actions = listOf(add, clear, grab), type = TokenType.STRING),
             Transition(accept = "\n", state = 12, actions = listOf(error)),
             Transition(accept = null, state = 12, actions = listOf(save, grab)),
         ),
@@ -199,19 +199,19 @@ class Scanner (
                                 when (transition.type) {
                                     TokenType.IDENTIFIER -> {
                                         if (lexeme in reserved) {
-                                            tokens.add(Token(value = null, line = lineIndex+1, lexeme = lexeme, type = reserved[lexeme]!!))
+                                            tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = reserved[lexeme]!!))
                                         } else {
-                                            tokens.add(Token(value = null, line = lineIndex+1, lexeme = lexeme, type = TokenType.IDENTIFIER))
+                                            tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = TokenType.IDENTIFIER))
                                         }
                                     }
                                     TokenType.INTEGER -> {
-                                        tokens.add(Token(value = lexeme.toInt(), line = lineIndex+1, lexeme = lexeme, type = TokenType.INTEGER))
+                                        tokens.add(Token(value = lexeme.toInt(), line = lineIndex, lexeme = lexeme, type = TokenType.INTEGER))
                                     }
                                     TokenType.DOUBLE -> {
-                                        tokens.add(Token(value = lexeme.toDouble(), line = lineIndex+1, lexeme = lexeme, type = TokenType.DOUBLE))
+                                        tokens.add(Token(value = lexeme.toDouble(), line = lineIndex, lexeme = lexeme, type = TokenType.DOUBLE))
                                     }
                                     else -> {
-                                        tokens.add(Token(value = null, line = lineIndex+1, lexeme = lexeme, type = transition.type!!))
+                                        tokens.add(Token(value = null, line = lineIndex, lexeme = lexeme, type = transition.type!!))
                                     }
                                 }
                             }
